@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -5,24 +9,60 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+:root {
+  color-scheme: dark;
+}
+
 html, body {
-  height: 100%;
-  overflow: hidden;
+  /* Dynamic Viewport Height: মোবাইল ব্রাউজারের নিচের বারের সমস্যা দূর করবে */
+  height: 100dvh; 
+  width: 100%;
+  overflow: hidden; /* অ্যাপলাইক ফিল দেওয়ার জন্য স্ক্রিন লক */
   font-family: 'Noto Serif Bengali', Georgia, serif;
   background: #04091a;
+  color: white;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-::-webkit-scrollbar { width: 0; }
+/* চ্যাট কন্টেইনারের জন্য কাস্টম স্ক্রলবার (ইনভিজিবল কিন্তু ফাংশনাল) */
+.custom-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
+/* Voice Animation: Mic bouncing */
 @keyframes bounce {
   0%, 80%, 100% { transform: scale(0.55); opacity: 0.4; }
-  40%            { transform: scale(1);    opacity: 1;   }
+  40%           { transform: scale(1);    opacity: 1;   }
 }
 
+/* Mic Active Ring: Red Pulse */
 @keyframes pulse-ring {
-  0%   { box-shadow: 0 0 0 0   rgba(255,77,77,0.55); }
-  70%  { box-shadow: 0 0 0 18px rgba(255,77,77,0);   }
-  100% { box-shadow: 0 0 0 0   rgba(255,77,77,0);    }
+  0%   { box-shadow: 0 0 0 0   rgba(255, 77, 77, 0.6); }
+  70%  { box-shadow: 0 0 0 20px rgba(255, 77, 77, 0);   }
+  100% { box-shadow: 0 0 0 0   rgba(255, 77, 77, 0);   }
 }
 
-button:active { transform: scale(0.93); }
+/* Glassmorphism Utility */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Interactive Feedback */
+button:active { 
+  transform: scale(0.95); 
+  transition: transform 0.1s ease;
+}
+
+/* Selection Color: Electric Violet */
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: #fff;
+}
