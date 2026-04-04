@@ -66,37 +66,40 @@ export default function VoiceApp() {
   }, []);
 
   const sendMessages = useCallback(
-    async (nextHistory: Msg[]) => {
-      if (processingRef.current) return;
-      processingRef.current = true;
-      setErrorBanner(null);
-      setStatus("thinking");
-      try {
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: nextHistory }),
-          cache: "no-store",
-        });
-        const data = (await res.json()) as { reply?: string; error?: string };
-        const reply = data.reply || "দুঃখিত, আমি বুঝতে পারিনি।";
-        if (!res.ok) {
-          setErrorBanner(data.error || BANGLA.networkError);
-          setHistory((h) => [...h, { role: "assistant", content: reply }]);
-          setStatus("idle");
-          return;
-        }
-        setHistory((h) => [...h, { role: "assistant", content: reply }]);
-        speak(reply);
-      } catch {
-        setErrorBanner(BANGLA.networkError);
+  async (nextHistory: Msg[]) => {
+    if (processingRef.current) return;
+    processingRef.current = true;
+    setErrorBanner(null);
+    setStatus("thinking");
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: nextHistory }),
+        cache: "no-store",
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        setErrorBanner(errorData.error || BANGLA.networkError);
+        setHistory((h) => [...h, { role: "assistant", content: "দুঃখিত, আমি বুঝতে পারিনি।" }]);
         setStatus("idle");
-      } finally {
-        processingRef.current = false;
+        return;
       }
-    },
-    [speak]
-  );
+
+      const data = await res.json();
+      const reply = data.reply || "দুঃখিত, আমি বুঝতে পারিনি।";
+      setHistory((h) => [...h, { role: "assistant", content: reply }]);
+      speak(reply);
+    } catch (e) {
+      setErrorBanner(BANGLA.networkError);
+      setStatus("idle");
+    } finally {
+      processingRef.current = false;
+    }
+  },
+  [speak]
+);
 
   const handleUserTurnRef = useRef<(text: string) => void>(() => {});
 
