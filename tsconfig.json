@@ -14,10 +14,10 @@
     "jsx": "preserve",
     "incremental": true,
     "plugins": [{ "name": "next" }],
-    "baseUrl": ".",                // ✅ ensures @/* resolves from project root
+    "baseUrl": ".", 
     "paths": {
       "@/*": ["./*"]
-    },
+    }, 
     "forceConsistentCasingInFileNames": true
   },
   "include": [
