@@ -15,10 +15,9 @@
 
 html, body {
   /* Dynamic Viewport Height: মোবাইল ব্রাউজারের নিচের বারের সমস্যা দূর করবে */
-  height: 100dvh; 
+  height: 100dvh;
   width: 100%;
-  overflow: hidden; /* অ্যাপলাইক ফিল দেওয়ার জন্য স্ক্রিন লক */
-  font-family: 'Noto Serif Bengali', Georgia, serif;
+  min-height: 100dvh;
   background: #04091a;
   color: white;
   -webkit-font-smoothing: antialiased;

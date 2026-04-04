@@ -1,5 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import { Noto_Serif_Bengali } from "next/font/google";
 import "./globals.css";
+
+const notoSerifBengali = Noto_Serif_Bengali({
+  subsets: ["bengali"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+  variable: "--font-noto-serif-bengali",
+  preload: true,
+});
 
 /** Canonical URL override in Vercel: NEXT_PUBLIC_SITE_URL=https://bijoyvoice-ai.vercel.app */
 function getSiteUrl(): URL {
@@ -16,7 +25,6 @@ function getSiteUrl(): URL {
 
 const siteUrl = getSiteUrl();
 
-// Metadata for SEO, PWA, and Social Media
 export const metadata: Metadata = {
   metadataBase: siteUrl,
   title: "BijoyVoice AI",
@@ -26,7 +34,6 @@ export const metadata: Metadata = {
     icon: "/icon-192.png",
     apple: "/icon-192.png",
   },
-  // Social Media Preview (Open Graph)
   openGraph: {
     title: "BijoyVoice AI",
     description: "বাংলা ভার্চুয়াল অ্যাসিস্ট্যান্ট — NB TECH",
@@ -36,7 +43,7 @@ export const metadata: Metadata = {
     siteName: "BijoyVoice AI",
     images: [
       {
-        url: "/og-image.png", // relative path now resolves correctly
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "BijoyVoice AI",
@@ -50,7 +57,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Viewport for Mobile Responsiveness and Theme
 export const viewport: Viewport = {
   themeColor: "#04091a",
   width: "device-width",
@@ -59,20 +65,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="bn">
+    <html lang="bn" className={notoSerifBengali.variable}>
       <head>
-        {/* Mobile Web App Optimization */}
         <meta name="mobile-web-app-capable" content="yes" />
-
-        {/* Font Loading Strategy: Preconnecting improves LCP speed */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700&display=swap"
-          rel="stylesheet"
-        />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="font-bengali antialiased">{children}</body>
     </html>
   );
 }
