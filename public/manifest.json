@@ -1,7 +1,7 @@
 {
   "name": "BijoyVoice AI",
   "short_name": "BijoyVoice",
-  "description": "বাংলা ভার্চুয়াল অ্যাসিস্ট্যান্ট — NB TECH",
+  "description": "বাংলায় বলুন—কাজ সারুন। ভয়েস ও টাইপ; গোপনীয়তা-সচেতন সহকারী। NB TECH",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#04091a",

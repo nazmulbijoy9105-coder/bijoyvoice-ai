@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Loader2, Mic, MicOff, RotateCcw, Send, Square } from "lucide-react";
+import { Loader2, Mic, MicOff, RotateCcw, Send, Shield, Square } from "lucide-react";
 
 type Role = "user" | "assistant";
 
@@ -22,6 +22,15 @@ const BANGLA = {
   micDenied: "মাইক্রোফোনের অনুমতি দরকার।",
   networkError: "নেটওয়ার্ক বা সার্ভার সমস্যা। আবার চেষ্টা করুন।",
 };
+
+/** Siri-style positioning: voice-first, useful, privacy-minded — in Bangla */
+const VOICE_ASSISTANT_COPY = {
+  headline: "বাংলায় বলুন — কাজ সারুন",
+  sub: "প্রশ্ন, পরামর্শ, লেখা বা আড্ডা—সবই শুধু কণ্ঠস্বরে বা টাইপে। খুব সহজ—সম্পূর্ণ বাংলায়।",
+  privacy:
+    "আপনার কথা প্রকাশ্যে শেয়ার করা হয় না। স্মার্ট সহকারী—গোপনীয়তা মাথায় রেখে।",
+  emptyHint: "মাইক টিপে বলুন, অথবা নিচে বাংলায় লিখে পাঠান।",
+} as const;
 
 export default function VoiceApp() {
   const [status, setStatus] = useState<keyof typeof LABELS>("idle");
@@ -200,11 +209,17 @@ export default function VoiceApp() {
   return (
     <div className="flex min-h-[100dvh] flex-col items-center bg-[#04091a] px-3 py-4 text-white sm:px-4">
       <div className="flex w-full max-w-lg flex-1 flex-col gap-3 sm:max-w-md">
-        <header className="shrink-0 text-center">
+        <header className="shrink-0 space-y-2 text-center">
           <h1 className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl">
             BijoyVoice AI
           </h1>
-          <p className="mt-1 text-xs text-zinc-500 sm:text-sm">NB TECH · বাংলা ভয়েস অ্যাসিস্ট্যান্ট</p>
+          <p className="text-sm font-medium leading-snug text-zinc-200 sm:text-base">{VOICE_ASSISTANT_COPY.headline}</p>
+          <p className="mx-auto max-w-md text-xs leading-relaxed text-zinc-500 sm:text-sm">{VOICE_ASSISTANT_COPY.sub}</p>
+          <p className="mx-auto flex max-w-md items-start justify-center gap-2 text-left text-[11px] leading-relaxed text-emerald-200/80 sm:text-xs">
+            <Shield className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/90" aria-hidden />
+            <span>{VOICE_ASSISTANT_COPY.privacy}</span>
+          </p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-600">NB TECH</p>
         </header>
 
         {!speechSupported && (
@@ -224,7 +239,7 @@ export default function VoiceApp() {
           className="custom-scrollbar min-h-0 flex-1 space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-zinc-900/40 p-3 backdrop-blur-xl sm:p-4"
         >
           {history.length === 0 && (
-            <p className="py-8 text-center text-sm text-zinc-500">কথা বলুন বা টাইপ করে শুরু করুন।</p>
+            <p className="px-2 py-8 text-center text-sm leading-relaxed text-zinc-500">{VOICE_ASSISTANT_COPY.emptyHint}</p>
           )}
           {history.map((m, i) => (
             <div

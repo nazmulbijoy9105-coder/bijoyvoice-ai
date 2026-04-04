@@ -27,16 +27,18 @@ const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
-  title: "BijoyVoice AI",
-  description: "বাংলা ভার্চুয়াল অ্যাসিস্ট্যান্ট — NB TECH",
+  title: "BijoyVoice AI — বাংলায় বলুন, কাজ সারুন",
+  description:
+    "বাংলা ভয়েস অ্যাসিস্ট্যান্ট: প্রশ্ন, পরামর্শ ও কথোপকথন—সহজে কণ্ঠস্বরে বা টাইপে। গোপনীয়তা-সচেতন, NB TECH।",
   manifest: "/manifest.json",
   icons: {
     icon: "/icon-192.png",
     apple: "/icon-192.png",
   },
   openGraph: {
-    title: "BijoyVoice AI",
-    description: "বাংলা ভার্চুয়াল অ্যাসিস্ট্যান্ট — NB TECH",
+    title: "BijoyVoice AI — বাংলায় বলুন, কাজ সারুন",
+    description:
+      "বাংলা ভয়েস অ্যাসিস্ট্যান্ট: প্রশ্ন, পরামর্শ ও কথোপকথন—সহজে কণ্ঠস্বরে বা টাইপে। গোপনীয়তা-সচেতন।",
     type: "website",
     locale: "bn_BD",
     url: siteUrl,
