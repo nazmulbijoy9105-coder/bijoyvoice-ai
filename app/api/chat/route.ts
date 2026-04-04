@@ -1,5 +1,4 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import type { GenerateContentResponse } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -51,9 +50,13 @@ function uniqueModels(preferred: string | undefined): string[] {
   return [...new Set(list)];
 }
 
-function safeText(response: GenerateContentResponse): string | null {
+/** SDK returns `.text()` at runtime; package typings omit it in some versions */
+function safeText(response: unknown): string | null {
   try {
-    const t = response.text()?.trim();
+    if (!response || typeof response !== "object") return null;
+    const textFn = (response as { text?: unknown }).text;
+    if (typeof textFn !== "function") return null;
+    const t = (textFn as () => string)()?.trim();
     return t || null;
   } catch {
     return null;
