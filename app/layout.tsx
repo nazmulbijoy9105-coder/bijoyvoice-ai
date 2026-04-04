@@ -1,13 +1,24 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+/** Canonical URL override in Vercel: NEXT_PUBLIC_SITE_URL=https://bijoyvoice-ai.vercel.app */
+function getSiteUrl(): URL {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) {
+    const base = explicit.replace(/\/$/, "");
+    return new URL(`${base}/`);
+  }
+  if (process.env.VERCEL_URL) {
+    return new URL(`https://${process.env.VERCEL_URL}`);
+  }
+  return new URL("http://localhost:3000");
+}
+
+const siteUrl = getSiteUrl();
+
 // Metadata for SEO, PWA, and Social Media
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? "https://bijoyvoice-ai.vercel.app" // ✅ your production domain
-      : "http://localhost:3000"            // ✅ dev fallback
-  ),
+  metadataBase: siteUrl,
   title: "BijoyVoice AI",
   description: "বাংলা ভার্চুয়াল অ্যাসিস্ট্যান্ট — NB TECH",
   manifest: "/manifest.json",
@@ -21,7 +32,7 @@ export const metadata: Metadata = {
     description: "বাংলা ভার্চুয়াল অ্যাসিস্ট্যান্ট — NB TECH",
     type: "website",
     locale: "bn_BD",
-    url: "https://bijoyvoice-ai.vercel.app", // ✅ match production domain
+    url: siteUrl,
     siteName: "BijoyVoice AI",
     images: [
       {
