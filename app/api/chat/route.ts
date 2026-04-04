@@ -1,3 +1,9 @@
+/**
+ * Server env (Vercel: Project → Settings → Environment Variables):
+ * - GEMINI_API_KEY   — required. Create: https://aistudio.google.com/app/apikey
+ * - GEMINI_MODEL     — optional. Use exact id OR plain words (see normalizeGeminiModelId).
+ * - NEXT_PUBLIC_*    — only for browser; this route does not read NEXT_PUBLIC_SITE_URL.
+ */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,6 +12,9 @@ export const maxDuration = 60;
 
 const MAX_MESSAGES = 24;
 const MAX_MESSAGE_CHARS = 4000;
+
+/** Tried in order after GEMINI_MODEL (if set). Keep 1.5-flash first — widest API support. */
+const MODEL_FALLBACKS = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"] as const;
 
 const SYSTEM_INSTRUCTION =
   "তুমি BijoyVoice AI—ব্যবহারকারীর ব্যক্তিগত বাংলা ভয়েস সহকারী। স্রষ্টা Md. Nazmul Islam (NB TECH)। স্বাভাবিক, স্পষ্ট বাংলায় উত্তর দাও; ব্যবহারকারীর তথ্য প্রকাশ বা শেয়ার করার পরামর্শ দিও না। প্রয়োজনে সংক্ষিপ্ত রাখো।";
@@ -44,9 +53,28 @@ function normalizeMessages(raw: unknown): { ok: true; messages: { role: Role; co
   return { ok: true, messages };
 }
 
+/**
+ * Maps human / tool labels to Google model ids (no spaces in final id).
+ * Examples: "gemini 1,5 flash", "gemini 1.5 flasg" → gemini-1.5-flash
+ */
+function normalizeGeminiModelId(raw: string | undefined): string | undefined {
+  const t = raw?.trim();
+  if (!t) return undefined;
+  const lower = t.toLowerCase().replace(/,/g, ".").replace(/flasg/g, "flash");
+  const spaced = lower.replace(/\s+/g, " ").trim();
+  if (spaced.includes("1.5") && spaced.includes("flash")) return "gemini-1.5-flash";
+  if (spaced.includes("2.0") && spaced.includes("flash")) return "gemini-2.0-flash";
+  if (spaced.includes("1.5") && spaced.includes("pro")) return "gemini-1.5-pro";
+  if (spaced.includes("2.0") && spaced.includes("pro")) return "gemini-2.0-pro";
+  const noSpace = lower.replace(/\s+/g, "");
+  if (/^gemini-[\w.-]+$/i.test(noSpace)) return noSpace;
+  const hyphen = lower.replace(/\s+/g, "-");
+  if (hyphen === "gemini-1-5-flash" || hyphen === "gemini-1.5-flash") return "gemini-1.5-flash";
+  return undefined;
+}
+
 function uniqueModels(preferred: string | undefined): string[] {
-  const defaults = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"];
-  const list = [preferred?.trim() || "", ...defaults].filter(Boolean);
+  const list = [preferred?.trim() || "", ...MODEL_FALLBACKS].filter(Boolean);
   return [...new Set(list)];
 }
 
@@ -118,7 +146,7 @@ export async function POST(req: NextRequest) {
   }));
   const lastUser = messages[messages.length - 1].content;
 
-  const envModel = process.env.GEMINI_MODEL?.trim();
+  const envModel = normalizeGeminiModelId(process.env.GEMINI_MODEL?.trim());
   const modelOrder = uniqueModels(envModel);
   let lastErr: unknown;
 
@@ -143,7 +171,7 @@ export async function POST(req: NextRequest) {
       error:
         process.env.NODE_ENV === "development" && lastErr != null
           ? String(lastErr)
-          : "মডেল বা API কী চেক করুন (Vercel এ GEMINI_API_KEY, প্রয়োজনে GEMINI_MODEL=gemini-1.5-flash)।",
+          : "Vercel এ GEMINI_API_KEY সেট করুন। মডেল: GEMINI_MODEL=gemini-1.5-flash (ঠিক এই স্পেলিং, স্পেস নয়)।",
       code: "MODEL_ERROR",
     },
     { status: 502 }
